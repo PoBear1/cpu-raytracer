@@ -1,0 +1,4 @@
+#ifndef __PBRT_FLOATING_POINT
+#define __PBRT_FLOATING_POINT
+
+#endif

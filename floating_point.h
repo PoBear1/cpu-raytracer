@@ -5,6 +5,10 @@
 #include <numeric>
 static constexpr double one_min_eps = 0x1.fffffffffffffp-1;
 template<typename T> 
+inline bool is_nan(T x) requires std::floating_point<T> {return std::isnan(x);}
+template<typename T>
+inline bool is_nan(T x) requires std::integral<T> {return false;}
+template<typename T> 
 inline bool is_inf(T x) requires std::floating_point<T> {return std::isinf(x);}
 template<typename T>
 inline bool is_inf(T x) requires std::integral<T> {return false;}

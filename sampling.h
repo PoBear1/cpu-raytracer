@@ -34,4 +34,5 @@ double sample_lin(double u, double a, double b) {
 	return std::min(x, one_min_eps);
 }
 inline double invert_lin_pdf(double x, double a, double b) {return x * (a * (2 - x) + b * x) / (a + b);}
+// double bilinear_pdf()
 #endif

@@ -2,30 +2,84 @@
 #define __PBRT_POINT_H
 #include <floating_point.h>
 #include <cassert>
+#include <cmath>
+#include <array>
 #define PBRT_DEBUG 1
 #if PBRT_DEBUG == 1
-	#define DCHECK(x) assert(x)
+	#define DCHECK(x) static_assert(x)
+#else
+	#define DCHECK(x) (x)
 #endif
-template<template<typename> class Child, typename T>
-class tuple2 {
+template<typename T, size_t N>
+class vec {
+	std::array<T, N> data{};
+	// this looks so cursed lmfao
+	template<typename F, size_t... I>
+	static constexpr vec apply_binary(F f, const vec& a, const vec& b, std::index_sequence<I...>) {return vec{f(a[I], b[I])...};}
+	template<typename F, size_t... I>
+	static constexpr vec apply_unary(F f, const vec& a, std::index_sequence<I...>) {return vec{f(a[I])...};}
+	template<typename F, size_t... I>
+	constexpr void apply_binary(F f, const vec& b, std::index_sequence<I...>) {((data[I] = f(data[I], b[I])), ...);}
+	template<typename F, typename G, size_t... I>
+	static constexpr T fold_binary(F f, G g, T acc, const vec& a, const vec& b, std::index_sequence<I...>) {((acc = f(acc, g(a[I], b[I]))), ...); return acc;}
 public:
-	static const int n_dims = 2;
-	tuple2() = default;
-	tuple2(T x, T y) : x(x), y(y) {DCHECK(!has_nan());}
-	bool has_nan() const {return is_nan(x) || is_nan(y);}
-	#if PBRT_DEBUG == 1
-		tuple2(Child<T> c) {
-			DCHECK(!c.has_nan());
-			x = c.x;
-			y = c.y;
-		}
-		Child<T> operator=(Child<T> c) {
-			DCHECK(!c.has_nan());
-			x = c.x;
-			y = c.y;
-			return static_cast<Child<T>&>(*this);
-		}
-	#endif
-	T x{}, y{};
+	constexpr vec() = default;
+	template<typename... Args>
+	constexpr vec(Args... args) : data{static_cast<T>(args)...} {
+		DCHECK(sizeof...(Args) == N);
+		DCHECK(is_finite(args) && ...);
+	}
+	// access operators
+	constexpr T& operator[](size_t i) {return data[i];}
+	constexpr const T& operator[](size_t i) const {return data[i];}
+	// math operators
+	friend constexpr vec operator+(const vec& a, const vec& b) {
+		return apply_binary([](T x, T y) -> T {return x + y;}, a, b, std::make_index_sequence<N>{});
+	}
+	constexpr vec& operator+=(const vec &b) {
+		apply_binary([](T x, T y) -> T {return x + y;}, b, std::make_index_sequence<N>{});	
+		return *this;
+	}
+	friend constexpr vec operator*(const vec& a, const vec& b) {
+		return apply_binary([](T x, T y) -> T {return x * y;}, a, b, std::make_index_sequence<N>{});
+	}
+	constexpr vec& operator*=(const vec &b) {
+		apply_binary([](T x, T y) -> T {return x * y;}, b, std::make_index_sequence<N>{});	
+		return *this;
+	}
+	friend constexpr vec operator*(const T& a, const vec& b) {
+		return apply_unary([&a](T x) -> T {return a * x;}, b, std::make_index_sequence<N>{});
+	}
+	friend constexpr vec operator*(const vec& b, const T& a) {
+		return apply_unary([&a](T x) -> T {return a * x;}, b, std::make_index_sequence<N>{});
+	}
+	friend constexpr vec operator/(const vec& b, const T& a) {
+		DCHECK(a != 0);
+		return (1 / a) * b;
+	}
+	friend constexpr vec operator-(const vec& a, const vec& b) {
+		return apply_binary([](T x, T y) -> T {return x - y;}, a, b, std::make_index_sequence<N>{});
+	}
+	constexpr vec& operator-=(const vec &b) {
+		apply_binary([](T x, T y) -> T {return x - y;}, b, std::make_index_sequence<N>{});	
+		return *this;
+	}
+	friend constexpr vec operator-(const vec& a) {
+		return apply_unary([](T x) -> T {return -x;}, a, std::make_index_sequence<N>{});
+	}
+	friend constexpr T dot(const vec& a, const vec& b) {
+		return fold_binary([](T x, T y) -> T {return x + y;}, [](T x, T y) -> T {return x * y;}, T{0}, a, b, std::make_index_sequence<N>{});
+	}
+	T length() const {return std::sqrt(dot(*this, *this));}
+	vec unit() const {return *this / length();}
 };
+// special cross product because ewwww
+template<typename T, size_t N> requires (N == 3)
+constexpr vec<T, N> cross(const vec<T, N>& a, const vec<T, N>& b) {
+	return vec<T, N>(
+		a[1] * b[2] - a[2] * b[1], 
+		a[2] * b[0] - a[0] * b[2], 
+		a[0] * b[1] - a[1] * b[0]
+	);
+}
 #endif

@@ -31,11 +31,27 @@ public:
 		output_image = std::fstream(filename, std::ios::out | std::ios::trunc | std::ios::binary);
 		std::string header = std::format("P6\n{} {}\n{}\n", image_width, image_height, static_cast<int>(max_rgb));
 		output_image.write(header.c_str(), static_cast<long long>(header.length()));
-		data_start = output_image.tellp();
-		output_image.write("\x00\x00\x00", 3);
+		data_start = static_cast<std::streamoff>(header.length());
+		for(int i = 0; i < image_width * image_height; ++i) {
+			output_image.write("\x00\x00\x00", 3);
+		}
+	}
+	void write_pixels(std::pair<int, int> coord, colour pixel) {
+		write_pixel(coord.first, coord.second, pixel);
+		if(++num_buffered >= buf_max) {
+			output_image.flush();
+			num_buffered = 0;
+		}
 	}
 	void write_pixels(std::vector<std::pair<std::pair<int, int>, colour>> pixels) {
-
+		for(auto [coords, pixel]: pixels) {
+			auto [x, y] = coords;
+			write_pixel(x, y, pixel);
+			if(++num_buffered >= buf_max) {
+				output_image.flush();
+				num_buffered = 0;
+			}
+		}
 	}
 };
 #endif

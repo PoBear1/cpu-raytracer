@@ -1,5 +1,5 @@
-#ifndef __PBRT_POINT_H
-#define __PBRT_POINT_H
+#ifndef __PBRT_VEC_MATH_H
+#define __PBRT_VEC_MATH_H
 #include <floating_point.h>
 #include <cassert>
 #include <cmath>

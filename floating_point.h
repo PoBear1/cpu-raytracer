@@ -1,5 +1,5 @@
-#ifndef __PBRT_FLOATING_POINT
-#define __PBRT_FLOATING_POINT
+#ifndef __PBRT_FLOATING_POINT_H
+#define __PBRT_FLOATING_POINT_H
 #include <type_traits>
 #include <concepts>
 #include <numeric>

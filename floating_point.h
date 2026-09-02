@@ -20,7 +20,7 @@ template<typename T>
 inline T next_num_up(T v) requires std::floating_point<T> {
 	if(is_inf(v) && v > 0.0) {return v;}
 	if(v == -0.0) {return 0.0;}
-	using T_int = std::conditional_t<std::is_same_v<T, float>, uint32_t, uint64_t>;
+	typename T_int = std::conditional_t<std::is_same_v<T, float>, uint32_t, uint64_t>;
 	T_int ui = std::bit_cast<T_int>(v);
 	if(v >= 0.0) {++ui;} else {--ui;}
 	return std::bit_cast<T>(ui); 

@@ -6,7 +6,7 @@
 #include <array>
 #define PBRT_DEBUG 1
 #if PBRT_DEBUG == 1
-	#define DCHECK(x) static_assert(x)
+	#define DCHECK(x) assert(x)
 #else
 	#define DCHECK(x) (x)
 #endif
@@ -27,7 +27,7 @@ public:
 	template<typename... Args>
 	constexpr vec(Args... args) : data{static_cast<T>(args)...} {
 		DCHECK(sizeof...(Args) == N);
-		DCHECK(is_finite(args) && ...);
+		DCHECK((is_finite(args) && ...));
 	}
 	// access operators
 	constexpr T& operator[](size_t i) {return data[i];}

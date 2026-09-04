@@ -74,6 +74,7 @@ public:
 		vec c = a - b;
 		return std::sqrt(dot(c, c));
 	}
+	T norm() const {return dot(*this, *this);}
 	T length() const {return std::sqrt(dot(*this, *this));}
 	vec unit() const {return *this / length();}
 };

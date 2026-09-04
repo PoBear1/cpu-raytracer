@@ -1,7 +1,7 @@
 #ifndef __PBRT_CAMERA_H
 #define __PBRT_CAMERA_H
-#include <vec_math.h>
-#include <ray.h>
+#include "vec_math.h"
+#include "ray.h"
 class camera {
 private:
 	// camera positioning shenanigans
@@ -21,7 +21,7 @@ private:
 	vec3 viewport_v;
 	vec3 pixel_du;
 	vec3 pixel_dv;
-
+	
 	// upper-left pixel location
 	point3 viewport_upper_left;
 	point3 pixel00_loc;

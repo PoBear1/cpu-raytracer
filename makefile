@@ -26,8 +26,8 @@ LDFLAGS = -L/opt/homebrew/Caskroom/miniforge/base/lib \
 LDLIBS = -lglew -lglfw -framework OpenGL -lgmp -lgmpxx -lmpfr -lmpc -lmp++
 
 main:
-	$(CXX) -c $(CXXFLAGS) ppm_renderer_test.cpp -o ppm_renderer_test.o
-	$(CXX) $(LDFLAGS) ppm_renderer_test.o $^ $(LDLIBS) -o render_test
+	$(CXX) -c $(CXXFLAGS) test.cpp -o test.o
+	$(CXX) $(LDFLAGS) test.o $^ $(LDLIBS) -o render_test
 
 clean:
 	rm -rf *.o

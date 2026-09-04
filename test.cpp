@@ -17,7 +17,7 @@ int main() {
 	// int image_height = 360;
 	hittable_list world;
     world.add(std::make_shared<sphere>(point3(0, 0, -1), 0.5));
-    world.add(std::make_shared<sphere>(point3(0, -102, -10), 100));
+    world.add(std::make_shared<sphere>(point3(0, -102, -1), 100));
 	ppm_renderer rend("image", image_width, image_height);
 	camera cam(point3(0, 0, 0), image_width, image_height, 1.0, 2.0);
 	for(int j = 0; j < image_height; j++) {

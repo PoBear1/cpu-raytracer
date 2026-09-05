@@ -1,5 +1,6 @@
 #ifndef __PBRT_PPM_RENDER
 #define __PBRT_PPM_RENDER
+#include "interval.h"
 #include "colour.h"
 #include <iostream>
 #include <fstream>
@@ -18,10 +19,16 @@ private:
 	void write_pixel(int x, int y, colour pixel_col) {
 		std::streamoff offset = data_start + std::streamoff(3 * (x + y * image_width));
 		output_image.seekp(offset);
+		interval colour_clamp(0.000, 0.999);
+		double clamp_pix[3] = {
+			colour_clamp.clamp(pixel_col[0]),
+			colour_clamp.clamp(pixel_col[1]),
+			colour_clamp.clamp(pixel_col[2])
+		};
 		unsigned char rgb[3] = {
-			(unsigned char)(pixel_col[0] * max_rgb), 
-			(unsigned char)(pixel_col[1] * max_rgb), 
-			(unsigned char)(pixel_col[2] * max_rgb)
+			(unsigned char)(clamp_pix[0] * max_rgb), 
+			(unsigned char)(clamp_pix[1] * max_rgb), 
+			(unsigned char)(clamp_pix[2] * max_rgb)
 		};
 		output_image.write(reinterpret_cast<char*>(rgb), 3);
 	}

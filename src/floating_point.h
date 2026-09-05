@@ -25,4 +25,21 @@ inline T next_num_up(T v) requires std::floating_point<T> {
 	if(v >= 0.0) {++ui;} else {--ui;}
 	return std::bit_cast<T>(ui); 
 }
+
+#include <numbers>
+#include <numeric>
+#include <cmath>
+
+constexpr double infinity = std::numeric_limits<double>::infinity();
+constexpr double pi = std::numbers::pi;
+
+inline double deg_to_rad(double degrees) {
+    return degrees * pi / 180.0;
+}
+
+#include <cstdlib>
+
+inline double random_double() {return std::rand() / (RAND_MAX + 1.0);}
+inline double random_double(double min, double max) {return min + (max - min) * random_double();}
+
 #endif

@@ -9,14 +9,14 @@ public:
 	hittable_list() {}
 	hittable_list(std::shared_ptr<hittable> object) {objects.push_back(object);}
 	void add(std::shared_ptr<hittable> object) {objects.push_back(object);}
-	bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
+	bool hit(const ray& r, interval t, hit_record& rec) const override {
 		hit_record temp_rec;
 		bool hit_anything = false;
-		double closest_so_far = ray_tmax;
+		interval t_current = t;
 		for(const std::shared_ptr<hittable>& object: objects) {
-			if(object -> hit(r, ray_tmin, closest_so_far, temp_rec)) {
+			if(object -> hit(r, t_current, temp_rec)) {
 				hit_anything = true;
-				closest_so_far = temp_rec.t;
+				t_current.max_v = temp_rec.t;
 				rec = temp_rec;
 			}
 		}
